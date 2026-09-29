@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import net from "node:net";
 import path from "node:path";
 import { KestrelConnection, KestrelError } from "./connection.js";
-import { kestrelDataDirectory } from "./paths.js";
+import { ensureWindowsRuntimeDlls, kestrelDataDirectory, launchEnvironment, resolveKestrelBinary } from "./paths.js";
 
 export type LaunchMode = "window" | "hidden" | "headless";
 
@@ -61,10 +61,12 @@ export class KestrelInstance {
   }
 
   async launch(request: LaunchRequest): Promise<Record<string, unknown>> {
-    const binary = request.binary ?? process.env.KESTREL_BINARY;
-    if (!binary) {
+    const requested = request.binary ?? process.env.KESTREL_BINARY;
+    if (!requested) {
       throw new KestrelError("Set KESTREL_BINARY to the Kestrel executable, or pass binary");
     }
+    const binary = resolveKestrelBinary(requested);
+    ensureWindowsRuntimeDlls(binary);
     await this.stop();
     const port = await freePort();
     const token = crypto.randomBytes(16).toString("hex");
@@ -89,8 +91,9 @@ export class KestrelInstance {
     this.exitStatus = undefined;
     const child = spawn(binary, args, {
       cwd: path.dirname(binary),
-      env: { ...process.env, KESTREL_AGENT_TOKEN: token },
+      env: launchEnvironment(binary, { KESTREL_AGENT_TOKEN: token }),
       stdio: ["ignore", "pipe", "pipe"],
+      windowsHide: request.mode !== "window",
     });
     this.process = child;
     const collect = (stream: string) => (chunk: Buffer) => {

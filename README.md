@@ -28,7 +28,10 @@ npm install
 npm run build
 ```
 
-Add it to Claude Code, pointing `KESTREL_BINARY` at the Kestrel executable:
+Add it to Claude Code, pointing `KESTREL_BINARY` at the Kestrel executable
+(on Windows, `Kestrel.exe`; MinGW builds also need `libssl-3-x64.dll`,
+`libcrypto-3-x64.dll` and `zlib1.dll` next to the exe — the server copies
+them from PATH / MSYS if they are missing):
 
 ```
 claude mcp add kestrel -e KESTREL_BINARY=/path/to/Kestrel/build/Kestrel -- node /path/to/kestrel-mcp/dist/index.js
@@ -84,5 +87,4 @@ line. `agent.json` is readable only by the user running Kestrel.
 
 ## Known gaps
 
-Screenshots read frames back from the Vulkan renderer, so they work on Linux. Direct3D 12 and Metal answer that
-screenshots are unsupported until their readback lands.
+Screenshots read frames back from the GPU (Vulkan, Direct3D 12 and Metal), including hidden windows.
