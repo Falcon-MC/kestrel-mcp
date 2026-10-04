@@ -92,5 +92,9 @@ line. `agent.json` is readable only by the user running Kestrel.
 
 ## Licensing information
 
+kestrel-mcp is licensed under the [GNU Lesser General Public License v3.0](LICENSE), which supplements the
+[GNU General Public License v3.0](COPYING). You may use, modify and redistribute it, as long as changes to
+kestrel-mcp itself stay under the same license.
+
 kestrel-mcp is not affiliated with Mojang. All brands and trademarks belong to their respective owners.
 kestrel-mcp is not a Mojang-approved software, nor is it associated with Mojang.
